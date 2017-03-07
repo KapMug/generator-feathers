@@ -14,8 +14,8 @@ const Connection = new(cradle.Connection)(config,
     {
         secure: false,
          auth: {
-             username: db_auth.dbUsername,
-             password: db_auth.dbPassword
+             username: db_auth.username,
+             password: db_auth.password
         },
         cache: true
     }
