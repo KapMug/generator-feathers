@@ -15,16 +15,16 @@ export default function getModule(app) {
 
         schema: schema,
         queries: `
-            all<%= camelName %>: [<%= camelName %>]
-            <%= camelName %>(id: String!): <%= camelName %>
+            all<%= pluralName %>: [<%= name %>]
+            <%= camelName %>(id: String!): <%= name %>
         `,
         mutations: `
-        create<%= camelName %> (
-        ): <%= camelName %>
+        create<%= name %> (
+        ): <%= name %>
         `,
         resolvers: {
             queries: {
-                all<%= camelName %>(root, args, context) {
+                all<%= pluralName %>(root, args, context) {
                     return service.find({query: {}})
                     .then(d => {
                         return d.toArray()

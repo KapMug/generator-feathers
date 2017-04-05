@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const pluralize = require('pluralize');
 const fs = require('fs');
 const path = require('path');
 const Generator = require('../../lib/generator');
@@ -95,7 +96,8 @@ module.exports = class ServiceGenerator extends Generator {
         requiresAuth: false
       }, props, answers, {
         kebabName: _.kebabCase(name),
-        camelName: _.camelCase(name)
+        camelName: _.camelCase(name),
+        pluralName: pluralize(name)
       });
     });
   }
@@ -197,19 +199,19 @@ module.exports = class ServiceGenerator extends Generator {
 
      this.fs.copyTpl(
         this.templatePath('graphql', 'service-name.graphql'),
-        this.destinationPath(this.libDirectory, 'models', kebabName, `${kebabName}.graphql`),
+        this.destinationPath(this.libDirectory, 'models',  `${kebabName}.graphql`),
         context
      );
 
      this.fs.copyTpl(
         this.templatePath('graphql', 'service-name.js'),
-        this.destinationPath(this.libDirectory, 'models', kebabName, `${kebabName}.js`),
+        this.destinationPath(this.libDirectory, 'models',  `${kebabName}.js`),
         context
      );
 
      this.fs.copyTpl(
         this.templatePath('graphql', 'service-name.validators.js'),
-        this.destinationPath(this.libDirectory, 'models', kebabName, `${kebabName}.validators.js`),
+        this.destinationPath(this.libDirectory, 'models', `${kebabName}.validators.js`),
         context
      );
 
