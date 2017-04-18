@@ -1,7 +1,8 @@
 const fs = require('fs') // import doesn't seem to work with this module
 const inspect = require('util').inspect
+const shortid = require('shortid32')
 const saveToHistory = require('./../../util/service.util').saveToHistory
-const schema = require("./<%= kebabCase %>.graphql")
+const schema = require("./<%= kebabName %>.graphql")
 
 export default function getModule(app) {
 
