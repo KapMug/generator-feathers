@@ -38,8 +38,8 @@ export default function getModule(app) {
             },
             mutations: {
                 create<%= name %>(root, data, context) {
-                    data.id = shortid.generate()
-                    return <%= name %>Service.create(data, context)
+                    // data.id = shortid.generate()
+                    return service.create(data, context)
                     
                     .catch(err => {
                         console.log(err.message ? err.message : err.errors)
@@ -53,7 +53,7 @@ export default function getModule(app) {
                         // Uncomment if there are nodes that need to be versioned
                         // saveToHistory(<%= name %>Service, app, currentDoc, data.data, [])
 
-                        const patchedDoc = await <%= name %>Service.patch(data.id, data.data)
+                        const patchedDoc = await service.patch(data.id, data.data)
                         return patchedDoc
 
                     }catch(err) {
