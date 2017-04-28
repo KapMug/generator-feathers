@@ -17,11 +17,12 @@ export default function getModule(app) {
         `,
         mutations: `
         create<%= name %> (
+            name: String!
         ): <%= name %>
 
         patch<%= name %> (
             id: String
-            data: <%= name %>Input
+            name: String
         ): <%= name %>
         `,
         resolvers: {
@@ -53,7 +54,7 @@ export default function getModule(app) {
                         // Uncomment if there are nodes that need to be versioned
                         // saveToHistory(<%= name %>Service, app, currentDoc, data.data, [])
 
-                        const patchedDoc = await service.patch(data.id, data.data)
+                        const patchedDoc = await service.patch(data.id, data)
                         return patchedDoc
 
                     }catch(err) {

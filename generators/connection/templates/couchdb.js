@@ -5,16 +5,15 @@ const service = require('feathers-couchdb');
 
 module.exports = function() {
   const app = this;
-  const config = app.get('couchdb_auth');
+  const config = app.get('couchdb');
   
-
-//var Connection = new(cradle.Connection)('http://192.168.1.79:5984')
-const Connection = new(cradle.Connection)(config,
+const Connection = new(cradle.Connection)(config.url,
     {
         secure: false,
+        forceSave: false,
          auth: {
-             username: config.username,
-             password: config.password
+            username: process.env.DB_USERNAME || config.username,
+            password: process.env.DB_PASSWORD || config.password
         },
         cache: true
     }
