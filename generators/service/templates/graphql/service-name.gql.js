@@ -1,12 +1,16 @@
-const fs = require('fs') // import doesn't seem to work with this module
-const inspect = require('util').inspect
-const shortid = require('shortid32')
-const saveToHistory = require('./../../util/service.util').saveToHistory
+'use_strict'
+
+const ServiceExtension = require('./../../util/service-extension')
+
 const schema = require("./<%= kebabName %>.graphql")
 
 export default function getModule(app) {
 
-    const service = app.service('<%= camelName %>');
+  const service = app.service('<%= kebabName %>')
+  const ext = new ServiceExtension(service, '<%= camelName %>', {
+    phraseName: 'um <%= camelName %>',
+    referenceFields: null
+  })
 
     return {
 
@@ -16,52 +20,44 @@ export default function getModule(app) {
             <%= camelName %>(id: String!): <%= name %>
         `,
         mutations: `
+        clone<%= pluralName %> (
+            scope: Scope!
+            startDate: String!
+            sources: [String]!
+        ): [<%= name %>]
+
         create<%= name %> (
-            name: String!
+            scope: Scope!
+            startDate: String!
+            fields: NameInput!
         ): <%= name %>
 
         patch<%= name %> (
-            id: String
-            name: String
+            id: String!
+            fields: NameInput!
         ): <%= name %>
         `,
         resolvers: {
             queries: {
                 all<%= pluralName %>(root, args, context) {
-                    return service.find({query: {}})
-                    .then(d => {
-                        return d.toArray()
-                    })
+                    return ext.findAll()
                 },
                 <%= camelName %>(root, { id }, context) {
-                    return service.get(id);
+                    return ext.get(id, context);
+                },
+                 async indicesInScope (root, { scope }, context) {
+                return new Error('Not implemented')
                 }
             },
             mutations: {
-                create<%= name %>(root, data, context) {
-                    // data.id = shortid.generate()
-                    return service.create(data, context)
-                    
-                    .catch(err => {
-                        console.log(err.message ? err.message : err.errors)
-                        return err
-                    });
+                async clone<%= pluralName %> (root, { scope, startDate, sources }, context) {
+                    return ext.clone(scope, startDate, sources)
                 },
-                async patch<%= name %>(root, data, context) {
-
-                    try {
-
-                        // Uncomment if there are nodes that need to be versioned
-                        // saveToHistory(<%= name %>Service, app, currentDoc, data.data, [])
-
-                        const patchedDoc = await service.patch(data.id, data)
-                        return patchedDoc
-
-                    }catch(err) {
-                        console.log(err.message)
-                        const msg = err.errors ? Object.values(err.errors)[0] : err.message
-                        return new Error(msg)
-                    }
+                async create<%= name %> (root, {scope, startDate, fields}, context) {
+                    return ext.createIfUnique(scope, startDate, fields, [], context)
+                },
+                async patch<%= name %> (root, {id, fields}, context) {
+                    return ext.patch(id, fields, context)
                 }
             }
         }

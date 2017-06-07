@@ -13,7 +13,7 @@ module.exports = function() {
 
   const options = {
     name: '<%= kebabName %>',<% if (modelName) { %>
-    Model,<% } %>
+    Model: 'kapmug',<% } %>
     paginate
   };
 
