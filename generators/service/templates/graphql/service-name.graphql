@@ -2,4 +2,7 @@
 
 type <%= name %> {
     id: String
+    name: String
+    startDate: String
+    scope: Scope
 }

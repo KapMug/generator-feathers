@@ -1,31 +1,12 @@
-'use strict';
+'use strict'
 
-// Initializes the `<%= name %>` service on path `/<%= path %>`
-const createService = require('<%= serviceModule %>');<% if(modelName) { %>
-const createModel = require('../../models/<%= modelName %>');<% } %>
-const hooks = require('./<%= kebabName %>.hooks');
-const filters = require('./<%= kebabName %>.filters');
+import { createService } from './../../util/service.util'
+import serviceDefinition from './<%= kebabName %>.definition'
 
-module.exports = function() {
-  const app = this;<% if (modelName) { %>
-  const Model = createModel(app);<% } %>
-  const paginate = app.get('paginate');
+// Initializes the `<%= camelName %>` service on path `/<%= kebabName %>`
+const hooks = require('./<%= kebabName %>.hooks')
+const filters = require('./<%= kebabName %>.filters')
 
-  const options = {
-    name: '<%= kebabName %>',<% if (modelName) { %>
-    Model: 'kapmug',<% } %>
-    paginate
-  };
-
-  // Initialize our service with any options it requires
-  app.use('/<%= path %>', createService(options));
-
-  // Get our initialized service so that we can register hooks and filters
-  const service = app.service('<%= path %>');
-
-  service.hooks(hooks);
-
-  if (service.filter) {
-    service.filter(filters);
-  }
-};
+module.exports = function () {
+  createService(serviceDefinition, this, hooks, filters)
+}

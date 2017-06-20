@@ -46,17 +46,17 @@ export default function getModule(app) {
                     return ext.get(id, context);
                 },
                  async indicesInScope (root, { scope }, context) {
-                return new Error('Not implemented')
+                    return new Error('Not implemented')
                 }
             },
             mutations: {
                 async clone<%= pluralName %> (root, { scope, startDate, sources }, context) {
                     return ext.clone(scope, startDate, sources)
                 },
-                async create<%= name %> (root, {scope, startDate, fields}, context) {
+                async create<%= name %> (root, { scope, startDate, fields }, context) {
                     return ext.createIfUnique(scope, startDate, fields, [], context)
                 },
-                async patch<%= name %> (root, {id, fields}, context) {
+                async patch<%= name %> (root, { id, fields }, context) {
                     return ext.patch(id, fields, context)
                 }
             }

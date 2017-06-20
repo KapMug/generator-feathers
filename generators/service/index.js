@@ -176,7 +176,15 @@ module.exports = class ServiceGenerator extends Generator {
       );
     }
 
+     this.fs.copyTpl(
+        this.templatePath('definition.js'),
+        this.destinationPath(this.libDirectory, 'services', kebabName,  `${kebabName}.definition.js`),
+        context
+     );
+
     if (context.modelName) {
+
+     
       // Copy the model
       this.fs.copyTpl(
         this.templatePath('model', modelTpl),
