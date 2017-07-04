@@ -6,3 +6,7 @@ type <%= name %> {
     startDate: String
     scope: Scope
 }
+
+input <%= name %>InputFields {
+    name: String
+}

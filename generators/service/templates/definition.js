@@ -1,6 +1,7 @@
 'use strict'
 
 import { map } from 'lodash'
+import { validateJsonSchema } from '../../util/validators.js'
 
 
 const <%= camelName %>Schema = {
@@ -29,7 +30,7 @@ module.exports = {
   },
   hooks: {
     before: {
-      create: [validate(<%= camelName %>Schema)]
+      create: [validateJsonSchema(<%= camelName %>Schema)]
     }
   },
   services: [],

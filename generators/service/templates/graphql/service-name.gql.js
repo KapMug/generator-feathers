@@ -1,25 +1,20 @@
 'use_strict'
 
-const ServiceExtension = require('./../../util/service-extension')
+import { createServiceExtension } from './../../util/service.util'
+import serviceDefinition from './<%= kebabName %>.definition'
+const schema = require('./<%= kebabName %>.graphql')
 
-const schema = require("./<%= kebabName %>.graphql")
+export default function getModule (app) {
+  const { ext } = createServiceExtension(app, serviceDefinition)
 
-export default function getModule(app) {
+return {
 
-  const service = app.service('<%= kebabName %>')
-  const ext = new ServiceExtension(service, '<%= camelName %>', {
-    phraseName: 'um <%= camelName %>',
-    referenceFields: null
-  })
-
-    return {
-
-        schema: schema,
-        queries: `
-            all<%= pluralName %>: [<%= name %>]
-            <%= camelName %>(id: String!): <%= name %>
+    schema: schema,
+    queries: `
+        all<%= pluralName %>: [<%= name %>]
+        <%= camelName %>(id: String!): <%= name %>
         `,
-        mutations: `
+    mutations: `
         clone<%= pluralName %> (
             scope: Scope!
             startDate: String!
@@ -37,7 +32,7 @@ export default function getModule(app) {
             fields: NameInput!
         ): <%= name %>
         `,
-        resolvers: {
+    resolvers: {
             queries: {
                 all<%= pluralName %>(root, args, context) {
                     return ext.findAll()
@@ -45,7 +40,7 @@ export default function getModule(app) {
                 <%= camelName %>(root, { id }, context) {
                     return ext.get(id, context);
                 },
-                 async indicesInScope (root, { scope }, context) {
+                 async all<%= pluralName %>InScope (root, { scope }, context) {
                     return new Error('Not implemented')
                 }
             },
@@ -58,6 +53,9 @@ export default function getModule(app) {
                 },
                 async patch<%= name %> (root, { id, fields }, context) {
                     return ext.patch(id, fields, context)
+                },
+                async delete<%= name %> (root, { id }, context) {
+                    return ext.delete(id)
                 }
             }
         }

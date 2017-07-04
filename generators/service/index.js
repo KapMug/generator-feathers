@@ -151,15 +151,15 @@ module.exports = class ServiceGenerator extends Generator {
     });
 
     // Do not run code transformations if the service file already exists
-    if (!this.fs.exists(mainFile)) {
-      const servicejs = this.destinationPath(this.libDirectory, 'services', 'index.js');
-      const transformed = this._transformCode(
-        this.fs.read(servicejs).toString()
-      );
+    // if (!this.fs.exists(mainFile)) {
+    //   const servicejs = this.destinationPath(this.libDirectory, 'services', 'index.js');
+    //   const transformed = this._transformCode(
+    //     this.fs.read(servicejs).toString()
+    //   );
 
-      this.conflicter.force = true;
-      this.fs.write(servicejs, transformed);
-    }
+    //   this.conflicter.force = true;
+    //   this.fs.write(servicejs, transformed);
+    // }
 
     // Run the `connection` generator for the selected database
     // It will not do anything if the db has been set up already
@@ -193,17 +193,17 @@ module.exports = class ServiceGenerator extends Generator {
       );
     }
 
-    this.fs.copyTpl(
-      this.templatePath(`hooks${this.props.authentication ? '-user' : ''}.js`),
-      this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.hooks.js`),
-      context
-    );
+    // this.fs.copyTpl(
+    //   this.templatePath(`hooks${this.props.authentication ? '-user' : ''}.js`),
+    //   this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.hooks.js`),
+    //   context
+    // );
 
-    this.fs.copyTpl(
-      this.templatePath('filters.js'),
-      this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.filters.js`),
-      context
-    );
+    // this.fs.copyTpl(
+    //   this.templatePath('filters.js'),
+    //   this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.filters.js`),
+    //   context
+    // );
 
      this.fs.copyTpl(
         this.templatePath('graphql', 'service-name.graphql'),
@@ -217,11 +217,11 @@ module.exports = class ServiceGenerator extends Generator {
         context
      );
 
-     this.fs.copyTpl(
-        this.templatePath('graphql', 'service-name.validators.js'),
-        this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.validators.js`),
-        context
-     );
+    //  this.fs.copyTpl(
+    //     this.templatePath('graphql', 'service-name.validators.js'),
+    //     this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.validators.js`),
+    //     context
+    //  );
 
     if (fs.existsSync(path.join(templatePath, 'types', `${adapter}.js`))) {
       this.fs.copyTpl(
@@ -230,11 +230,11 @@ module.exports = class ServiceGenerator extends Generator {
         context
       );
     } else {
-      this.fs.copyTpl(
-        this.templatePath('service.js'),
-        mainFile,
-        context
-      );
+      // this.fs.copyTpl(
+      //   this.templatePath('service.js'),
+      //   mainFile,
+      //   context
+      // );
     }
 
     if (serviceModule.charAt(0) !== '.') {
