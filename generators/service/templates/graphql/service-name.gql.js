@@ -4,7 +4,7 @@ import { createServiceExtension } from './../../util/service.util'
 import serviceDefinition from './<%= kebabName %>.definition'
 const schema = require('./<%= kebabName %>.graphql')
 
-export default function getModule (app) {
+export function getModule (app) {
   const { ext } = createServiceExtension(app, serviceDefinition)
 
 return {
@@ -12,6 +12,7 @@ return {
     schema: schema,
     queries: `
         all<%= pluralName %>: [<%= name %>]
+        <%= pluralName %>InScope(scope: ScopeInput!): [<%= name %>]
         <%= camelName %>(id: String!): <%= name %>
         `,
     mutations: `
@@ -31,6 +32,9 @@ return {
             id: String!
             fields: NameInput!
         ): <%= name %>
+
+        delete<%= name %>(id: String!): SingleDeleteResult
+
         `,
     resolvers: {
             queries: {

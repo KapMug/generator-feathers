@@ -5,6 +5,7 @@ type <%= name %> {
     name: String
     startDate: String
     scope: Scope
+    audit: String
 }
 
 input <%= name %>InputFields {
