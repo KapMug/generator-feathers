@@ -4,7 +4,7 @@ import { createServiceExtension } from './../../util/service.util'
 import serviceDefinition from './<%= kebabName %>.definition'
 const schema = require('./<%= kebabName %>.graphql')
 
-export function default getModule (app) {
+export default function getModule (app) {
   const { ext } = createServiceExtension(app, serviceDefinition)
 
 return {
