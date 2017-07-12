@@ -12,7 +12,7 @@ return {
     schema: schema,
     queries: `
         all<%= pluralName %>: [<%= name %>]
-        <%= pluralName %>InScope(scope: ScopeInput!): [<%= name %>]
+        <%= camelName %>InScope(scope: ScopeInput!): [<%= name %>]
         <%= camelName %>(id: String!): <%= name %>
         `,
     mutations: `

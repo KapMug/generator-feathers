@@ -8,6 +8,11 @@ type <%= name %> {
     audit: String
 }
 
-input <%= name %>InputFields {
+input <%= name %>CreateFields {
     name: String
 }
+
+input <%= name %>PatchFields {
+    name: String
+}
+

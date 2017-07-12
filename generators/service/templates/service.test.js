@@ -1,14 +1,21 @@
-'use strict'
-
 import test from 'ava'
 import ApolloClient, { createNetworkInterface } from 'apollo-client'
-import fetch from 'isomorphic-fetch'
+import fetch from 'isomorphic-fetch' // NOTE: do not remove
 import gql from 'graphql-tag'
-import { isMatch, some } from 'lodash'
 
-import { url, invalidStartDateError, defaultScope } from '../helpers'
+import { url,
+  defaultScope,
+  randomName,
+  validDateStr,
+  testCreateValid,
+  testCreateWithMissingProperty,
+  testCreateWithInvalidStartDate,
+  testGetExisting,
+  testPatch,
+  testFindAll,
+  } from '../helpers'
 
-const getRandomName = () => '<%= name %> from test [' + Math.round(Math.random() * 1000) + ']'
+
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
@@ -18,11 +25,32 @@ const client = new ApolloClient({
 
 // declare some mutations and queries that we will want to reuse
 
-const createMutationTemplate = gql`
-      mutation create<%= name %>($scope: ScopeInput!, $startDate: String!, $fields: NameInput!) {
-        create<%= name %>(
+const getQueryTemplate = gql`
+      query <%= name %> ($id: String!) {
+        <%= name %>(id: $id) {
+          id
+        }
+      }
+    `
+
+const creationTemplate = gql`
+      mutation create<%= name %> ($scope: ScopeInput!, $startDate: String!, $fields: <%= name %>CreateFields!) {
+        create<%= name %> (
           scope: $scope,
           startDate: $startDate,
+          fields: $fields
+        ) {
+          id
+          name
+          startDate
+        }
+      }
+    `
+
+const patchTemplate = gql`
+      mutation patch<%= name %> ($id: String!, $fields: <%= name %>PatchFields!) {
+        patch<%= name %>(
+          id: $id
           fields: $fields
         ) {
           id,
@@ -41,120 +69,36 @@ const findAllTemplate = gql`
         }
       }
     `
-    
-let created<%= name %>
+const validInput = {
+  scope: defaultScope,
+  startDate: validDateStr,
+  fields: {
+    name: randomName(),
+  },
+}
 
-// tests starts here
+const creationResult = {
+  instance: null, // creation operation will save its result to this property
+}
 
-test.serial('Create a valid <%= name %>', t => {
-  const validInput = {
-    scope: defaultScope,
-    startDate: '2010-01-25',
-    fields: {
-      name: getRandomName(),
-    },
-  }
+test.serial('Create a valid <%= name %>',
+ t => testCreateValid(t, client, creationTemplate, validInput, creationResult))
 
-  return client.mutate({
-    mutation: createMutationTemplate,
-    variables: validInput,
-  })
-  .then(data => {
-    created<%= name %> = data.data.create<%= name %>
-    return t.true(isMatch(created<%= name %>, validInput.fields))
-  })
-  .catch(error => t.fail(error))
-})
+test('Attempt to create a <%= name %> without providing a name',
+t => testCreateWithMissingProperty(t, client, creationTemplate, validInput, 'name', 'fields.name'))
 
-test('Attempt to create a <%= name %> with missing params', t => {
-  const inputWithMissingParams = {
-    scope: defaultScope,
-    startDate: '2017-11-24',
-    fields: {},
-  }
+test('Attempt to create a <%= name %> with invalid startDate',
+t => testCreateWithInvalidStartDate(t, client, creationTemplate, validInput))
 
-  return client.mutate({
-    mutation: createMutationTemplate,
-    variables: inputWithMissingParams,
-  })
-  .then(() => t.fail('Shouldn\'`t have passed with missing param.'))
-  .catch(error => t.regex(error.message, new RegExp('.*In field "name": Expected "String!", found null.*$')))
-})
+test('Get existing <%= name %>',
+t => testGetExisting(t, client, getQueryTemplate, creationResult.instance.id, '<%= name %>'))
 
-test('Attempt to create a <%= name %> with invalid startDate', t => {
-  const inputWithInvalidDate = {
-    scope: defaultScope,
-    startDate: '1995-13-24',
-    fields: {
-      name: 'CDI',
-    },
-  }
+test('Find all <%= pluralName %>',
+t => testFindAll(t, client, findAllTemplate, creationResult.instance, 'all<%= pluralName %>'))
 
-  return client.mutate({
-    mutation: createMutationTemplate,
-    variables: inputWithInvalidDate,
-  })
-  .then(() => t.fail('Shouldn\'`t have passed with invalid startDate.'))
-  .catch(error => t.deepEqual(error.graphQLErrors[0], invalidStartDateError))
-})
-
-test('Get existing <%= name %>', t => {
-  return client.query({
-    query: gql`
-      query <%= camelName %>($id: String!) {
-        <%= camelName %>(id: $id) {
-          id
-        }
-      }
-    `,
-    variables: { id: created<%= name %>.id },
-  })
-  .then(data => {
-    t.is(data.data.<%= camelName %>.id, created<%= name %>.id)
-  })
-  .catch(error => t.fail(error))
-})
-
-test('Find all <%= pluralName %>', t => {
-  return client.query({
-    query: findAllTemplate,
-  })
-  .then(data => t.true(some(data.data.all<%= pluralName %>, created<%= name %>)))
-  .catch(error => t.fail(error))
-})
-
-test('Clone <%= name %>', t => {
-  return client.query({
-    query: findAllTemplate,
-  })
-  .then(data => t.true(Array.isArray(data.data.all<%= pluralName %>)))
-  .catch(error => t.fail(error))
-})
+test.skip('Clone <%= name %>', t => null)
 
 test('Patch <%= name %>', t => {
-  let fields = { name: 'Patched Name' }
-
-  return client.mutate({
-    mutation: gql`
-      mutation patch<%= name %>($id: String!, $fields: NameInput!) {
-        patch<%= name %>(
-          id: $id
-          fields: $fields
-        ) {
-          id,
-          name,
-          startDate
-        }
-      }
-    `,
-    variables: {
-      id: created<%= name %>.id,
-      fields,
-    },
-  })
-  .then(data => {
-    Object.assign(created<%= name %>, fields)
-    t.deepEqual(created<%= name %>, data.data.patch<%= name %>)
-  })
-  .catch(error => t.fail(error))
+  const fields = { name: 'Patched <%= name %> Name' }
+  return testPatch(t, client, patchTemplate, fields, creationResult.instance, 'patch<%= name %>')
 })
