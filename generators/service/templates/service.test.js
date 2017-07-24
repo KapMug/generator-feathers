@@ -42,6 +42,20 @@ const createTemplate = gql`
       }
     `
 
+  const cloneTemplate = gql`
+      mutation clone<%= pluralName %>($scope: ScopeInput!, $startDate: String!, $sources: [String]!) {
+        clone<%= pluralName %>(
+          scope: $scope,
+          startDate: $startDate,
+          sources: $sources
+        ) {
+          id
+          startDate
+        }
+      }
+    `
+
+
 const patchTemplate = gql`
       mutation patch<%= name %>($id: String!, $fields: <%= name %>PatchFields!) {
         patch<%= name %>(
@@ -93,8 +107,9 @@ const configData = {
 
 const config = getTestConfig(configData)
 
-test.serial('Create a valid <%= name %>',
- t => testCreateValid(t, config))
+test.serial('Create a valid <%= name %>', t => testCreateValid(t, config))
+
+test.serial('Clone an existing <%= name %> to a new date:', t => testClone(t, config))
 
 test.serial('Patch <%= name %>', t => testPatch(t, config))
 
