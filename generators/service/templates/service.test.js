@@ -1,61 +1,57 @@
 import test from 'ava'
-import ApolloClient, { createNetworkInterface } from 'apollo-client'
 import fetch from 'isomorphic-fetch' // NOTE: do not remove
 import gql from 'graphql-tag'
 
-import { url,
+import {
+  getTestConfig,
   defaultScope,
   randomName,
-  validDateStr,
+  randomPatchedName,
+  randomFutureDate,
   testCreateValid,
+  testPatch,
   testCreateWithMissingProperty,
   testCreateWithInvalidStartDate,
-  testGetExisting,
-  testPatch,
+  testFindOne,
   testFindAll,
-  } from '../helpers'
-
-
-
-const client = new ApolloClient({
-  networkInterface: createNetworkInterface({
-    uri: url,
-  }),
-})
+} from '../helpers'
 
 // declare some mutations and queries that we will want to reuse
 
-const getQueryTemplate = gql`
-      query <%= name %> ($id: String!) {
-        <%= name %>(id: $id) {
+const findOneTemplate = gql`
+      query <%= camelName %>($id: String!) {
+        <%= camelName %>(id: $id) {
           id
         }
       }
     `
 
-const creationTemplate = gql`
-      mutation create<%= name %> ($scope: ScopeInput!, $startDate: String!, $fields: <%= name %>CreateFields!) {
-        create<%= name %> (
+const createTemplate = gql`
+      mutation create<%= name %>($scope: ScopeInput!, $startDate: String!, $fields: <%= name %>InputFields!) {
+        create<%= name %>(
           scope: $scope,
           startDate: $startDate,
           fields: $fields
         ) {
           id
           name
+          code
+          isoCode
           startDate
         }
       }
     `
 
 const patchTemplate = gql`
-      mutation patch<%= name %> ($id: String!, $fields: <%= name %>PatchFields!) {
+      mutation patch<%= name %>($id: String!, $fields: <%= name %>PatchFields!) {
         patch<%= name %>(
           id: $id
           fields: $fields
         ) {
           id,
           name,
-          startDate
+          code,
+          isoCode,
         }
       }
     `
@@ -65,40 +61,59 @@ const findAllTemplate = gql`
         all<%= pluralName %> {
           id
           name
-          startDate
+          code
+          isoCode
         }
       }
     `
-const validInput = {
-  scope: defaultScope,
-  startDate: validDateStr,
-  fields: {
-    name: randomName(),
-  },
+
+const getValidInput = function () {
+  return ({
+    scope: defaultScope,
+    startDate: randomFutureDate(),
+    fields: {
+      name: randomName(),
+      code: '123',
+      isoCode: '123',
+    },
+  })
 }
 
-const creationResult = {
-  instance: null, // creation operation will save its result to this property
+const configData = {
+  modelName: '<%= name %>',
+  requiredFields: ['name', 'code', 'isoCode'],
+  fieldsToPatch: { name: randomPatchedName() },
+  getValidInput,
+  findOneTemplate,
+  findAllTemplate,
+  createTemplate,
+  patchTemplate,
+//  cloneTemplate,
 }
+
+const config = getTestConfig(configData)
 
 test.serial('Create a valid <%= name %>',
- t => testCreateValid(t, client, creationTemplate, validInput, creationResult))
+ t => testCreateValid(t, config))
 
-test('Attempt to create a <%= name %> without providing a name',
-t => testCreateWithMissingProperty(t, client, creationTemplate, validInput, 'name', 'fields.name'))
+test.serial('Patch <%= name %>', t => testPatch(t, config))
 
-test('Attempt to create a <%= name %> with invalid startDate',
-t => testCreateWithInvalidStartDate(t, client, creationTemplate, validInput))
+// NOTE: here you pass in your own date string as a 3rd param if really need to
+test('Attempt to create a <%= name %> with invalid startDate', t => testCreateWithInvalidStartDate(t, config))
 
-test('Get existing <%= name %>',
-t => testGetExisting(t, client, getQueryTemplate, creationResult.instance.id, '<%= name %>'))
-
-test('Find all <%= pluralName %>',
-t => testFindAll(t, client, findAllTemplate, creationResult.instance, 'all<%= pluralName %>'))
-
-test.skip('Clone <%= name %>', t => null)
-
-test('Patch <%= name %>', t => {
-  const fields = { name: 'Patched <%= name %> Name' }
-  return testPatch(t, client, patchTemplate, fields, creationResult.instance, 'patch<%= name %>')
+config.requiredFields.forEach(name => {
+  test(`Attempt to create a <%= name %> without providing a ${name}`,
+   t => testCreateWithMissingProperty(t, config, name))
 })
+
+test('Get existing <%= name %>', t => testFindOne(t, config))
+
+test('Find all <%= pluralName %>', t => testFindAll(t, config))
+
+// test.skip('Clone <%= name %>', t => null)
+
+
+
+
+
+
