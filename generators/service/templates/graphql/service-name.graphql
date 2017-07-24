@@ -9,7 +9,7 @@ type <%= name %> {
 }
 
 input <%= name %>CreateFields {
-    name: String
+    name: String!
 }
 
 input <%= name %>PatchFields {
