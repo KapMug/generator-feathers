@@ -18,14 +18,6 @@ import {
 
 // declare some mutations and queries that we will want to reuse
 
-const findOneTemplate = gql`
-      query <%= camelName %>($id: String!) {
-        <%= camelName %>(id: $id) {
-          id
-        }
-      }
-    `
-
 const createTemplate = gql`
       mutation create<%= name %>($scope: ScopeInput!, $startDate: String!, $fields: <%= name %>InputFields!) {
         create<%= name %>(
@@ -38,6 +30,20 @@ const createTemplate = gql`
           code
           isoCode
           startDate
+        }
+      }
+    `
+
+const patchTemplate = gql`
+      mutation patch<%= name %>($id: String!, $fields: <%= name %>PatchFields!) {
+        patch<%= name %>(
+          id: $id
+          fields: $fields
+        ) {
+          id,
+          name,
+          code,
+          isoCode,
         }
       }
     `
@@ -55,17 +61,10 @@ const createTemplate = gql`
       }
     `
 
-
-const patchTemplate = gql`
-      mutation patch<%= name %>($id: String!, $fields: <%= name %>PatchFields!) {
-        patch<%= name %>(
-          id: $id
-          fields: $fields
-        ) {
-          id,
-          name,
-          code,
-          isoCode,
+const findOneTemplate = gql`
+      query <%= camelName %>($id: String!) {
+        <%= camelName %>(id: $id) {
+          id
         }
       }
     `
@@ -87,45 +86,43 @@ const getValidInput = function () {
     startDate: randomFutureDate(),
     fields: {
       name: randomName(),
-      code: '123',
-      isoCode: '123',
     },
   })
 }
 
 const configData = {
   modelName: '<%= name %>',
-  requiredFields: ['name', 'code', 'isoCode'],
+  requiredFields: ['name'],
   fieldsToPatch: { name: randomPatchedName() },
   getValidInput,
   findOneTemplate,
   findAllTemplate,
   createTemplate,
   patchTemplate,
-//  cloneTemplate,
+  cloneTemplate,
 }
+
+
 
 const config = getTestConfig(configData)
 
-test.serial('Create a valid <%= name %>', t => testCreateValid(t, config))
+test.serial.skip(`Create a valid ${config.modelName}`, t => testCreateValid(t, config))
 
-test.serial('Clone an existing <%= name %> to a new date:', t => testClone(t, config))
+test.serial.skip(`Clone an existing ${config.modelName} to a new date:`, t => testClone(t, config))
 
-test.serial('Patch <%= name %>', t => testPatch(t, config))
+test.serial.skip(`Patch an existing ${config.modelName}`, t => testPatch(t, config))
 
 // NOTE: here you pass in your own date string as a 3rd param if really need to
-test('Attempt to create a <%= name %> with invalid startDate', t => testCreateWithInvalidStartDate(t, config))
+test.skip(`Attempt to create a ${config.modelName} with invalid startDate`, t => testCreateWithInvalidStartDate(t, config))
 
 config.requiredFields.forEach(name => {
-  test(`Attempt to create a <%= name %> without providing a ${name}`,
+  test.skip(`Attempt to create a ${config.modelName} without providing a ${name}`,
    t => testCreateWithMissingProperty(t, config, name))
 })
 
-test('Get existing <%= name %>', t => testFindOne(t, config))
+test.skip(`Get existing ${config.modelName}`, t => testFindOne(t, config))
 
-test('Find all <%= pluralName %>', t => testFindAll(t, config))
-
-// test.skip('Clone <%= name %>', t => null)
+test.skip(`Find all ${config.pluralizedName}`, t => testFindAll(t, config))
 
 
 
