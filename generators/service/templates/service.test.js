@@ -102,8 +102,6 @@ const configData = {
   cloneTemplate,
 }
 
-
-
 const config = getTestConfig(configData)
 
 test.serial.skip(`Create a valid ${config.modelName}`, t => testCreateValid(t, config))

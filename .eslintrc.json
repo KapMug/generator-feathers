@@ -4,7 +4,7 @@
     "node": true,
     "mocha": true
   },
-  "extends": "eslint:recommended",
+  "extends": "airbnb",
   "rules": {
     "indent": [
       "error",
@@ -20,7 +20,18 @@
     ],
     "semi": [
       "error",
-      "always"
+      "never"
+    ],
+    "max-len": [
+      "error",
+      120
+    ],
+    "arrow-parens": [
+      "error","as-needed"
+    ],
+    "no-param-reassign": [
+      "error",
+      { "props": false }
     ]
   }
 }

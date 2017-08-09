@@ -18,13 +18,13 @@ return {
     mutations: `
         clone<%= pluralName %> (
             scope: Scope!
-            startDate: String!
+            startDate: BitInt!
             sources: [String]!
         ): [<%= name %>]
 
         create<%= name %> (
             scope: Scope!
-            startDate: String!
+            startDate: BigInt!
             fields: NameInput!
         ): <%= name %>
 

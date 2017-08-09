@@ -1,32 +1,25 @@
-import { validateJsonSchema } from '../../util/validators.js'
 
-const <%= camelName %>Schema = {
+const patchSchema = {
   properties: {
-    _id: {
-      type: 'string'
-    },
     name: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
-      date: 'ISOString'
-    }
+      type: 'integer',
+      format: 'timestamp',
+    },
   },
-  required: ['_id', 'name', 'startDate']
 }
 
+const createSchema = Object.assign({ required: ['name', 'startDate'] }, patchSchema)
 
 module.exports = {
   config: {
     phraseName: 'um ?',
     referenceFields: [],
     schemas: {
-      productType: <%= camelName %>Schema
-    }
+      create: createSchema,
+      patch: patchSchema,
+    },
   },
-  hooks: {
-    before: {
-      create: [validateJsonSchema(<%= camelName %>Schema)]
-    }
-  }
 }

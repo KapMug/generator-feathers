@@ -223,11 +223,6 @@ module.exports = class ServiceGenerator extends Generator {
         context
      );
 
-    //  this.fs.copyTpl(
-    //     this.templatePath('graphql', 'service-name.validators.js'),
-    //     this.destinationPath(this.libDirectory, 'services', kebabName, `${kebabName}.validators.js`),
-    //     context
-    //  );
 
     if (fs.existsSync(path.join(templatePath, 'types', `${adapter}.js`))) {
       this.fs.copyTpl(
