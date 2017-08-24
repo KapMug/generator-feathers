@@ -19,16 +19,13 @@ import {
 // declare some mutations and queries that we will want to reuse
 
 const createTemplate = gql`
-      mutation create<%= name %>($scope: ScopeInput!, $startDate: String!, $fields: <%= name %>InputFields!) {
+      mutation create<%= name %>($scope: ScopeInput!, $fields: <%= name %>InputFields!) {
         create<%= name %>(
           scope: $scope,
-          startDate: $startDate,
           fields: $fields
         ) {
           id
           name
-          code
-          isoCode
           startDate
         }
       }
@@ -42,7 +39,6 @@ const patchTemplate = gql`
         ) {
           id,
           name,
-          code,
           isoCode,
         }
       }
@@ -74,8 +70,6 @@ const findAllTemplate = gql`
         all<%= pluralName %> {
           id
           name
-          code
-          isoCode
         }
       }
     `
@@ -83,8 +77,8 @@ const findAllTemplate = gql`
 const getValidInput = function () {
   return ({
     scope: defaultScope,
-    startDate: randomFutureDate(),
     fields: {
+      startDate: randomFutureDate(),
       name: randomName(),
     },
   })

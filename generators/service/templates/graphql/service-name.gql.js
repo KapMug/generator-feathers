@@ -1,10 +1,8 @@
-'use_strict'
-
 import { createServiceExtension } from './../../util/service.util'
 import serviceDefinition from './<%= kebabName %>.definition'
 const schema = require('./<%= kebabName %>.graphql')
 
-export default function getModule (app) {
+export default function getModule(app) {
   const { ext } = createServiceExtension(app, serviceDefinition)
 
 return {
@@ -24,7 +22,6 @@ return {
 
         create<%= name %> (
             scope: Scope!
-            startDate: BigInt!
             fields: NameInput!
         ): <%= name %>
 
@@ -38,13 +35,13 @@ return {
         `,
     resolvers: {
             queries: {
-                all<%= pluralName %>(root, args, context) {
+                async all<%= pluralName %>(root, args, context) {
                     return ext.findAll()
                 },
-                <%= camelName %>(root, { id }, context) {
+                async <%= camelName %>(root, { id }, context) {
                     return ext.get(id, context);
                 },
-                 async all<%= pluralName %>InScope (root, { scope }, context) {
+                async all<%= pluralName %>InScope (root, { scope }, context) {
                     return new Error('Not implemented')
                 }
             },
@@ -52,8 +49,8 @@ return {
                 async clone<%= pluralName %> (root, { scope, startDate, sources }, context) {
                     return ext.clone(scope, startDate, sources)
                 },
-                async create<%= name %> (root, { scope, startDate, fields }, context) {
-                    return ext.createIfUnique(scope, startDate, fields, [], context)
+                async create<%= name %> (root, { scope, fields }, context) {
+                    return ext.createIfUnique(scope, fields.startDate, fields, [], context)
                 },
                 async patch<%= name %> (root, { id, fields }, context) {
                     return ext.patch(id, fields, context)

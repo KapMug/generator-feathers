@@ -1,5 +1,7 @@
 
-const patchSchema = {
+import { cloneAndSetAllRequiredToEmptyArray } from '../../util/clone-schema-util'
+
+const schema = {
   properties: {
     name: {
       type: 'string',
@@ -9,17 +11,16 @@ const patchSchema = {
       format: 'timestamp',
     },
   },
+  required: [],
 }
-
-const createSchema = Object.assign({ required: ['name', 'startDate'] }, patchSchema)
 
 module.exports = {
   config: {
     phraseName: 'um ?',
     referenceFields: [],
     schemas: {
-      create: createSchema,
-      patch: patchSchema,
+      create: schema,
+      patch: cloneAndSetAllRequiredToEmptyArray(schema),
     },
   },
 }
