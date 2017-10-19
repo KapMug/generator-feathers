@@ -36,7 +36,7 @@ return {
     resolvers: {
             queries: {
                 async all<%= pluralName %>(root, args, context) {
-                    return ext.findAll()
+                    return ext.findAll(args, context)
                 },
                 async <%= camelName %>(root, { id }, context) {
                     return ext.get(id, context);
@@ -47,16 +47,16 @@ return {
             },
             mutations: {
                 async clone<%= pluralName %> (root, { scope, startDate, sources }, context) {
-                    return ext.clone(scope, startDate, sources)
+                    return ext.clone(scope, startDate, sources, context)
                 },
                 async create<%= name %> (root, { scope, fields }, context) {
-                    return ext.createIfUnique(scope, fields.startDate, fields, [], context)
+                    return ext.create(scope, fields, [], context)
                 },
                 async patch<%= name %> (root, { id, fields }, context) {
                     return ext.patch(id, fields, context)
                 },
                 async delete<%= name %> (root, { id }, context) {
-                    return ext.delete(id)
+                    return ext.delete(id, context)
                 }
             }
         }
